@@ -1,0 +1,1655 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahei API</title>
+  <meta name="description" content="Ahei API — 让每个人，都能接入更强的 AI。统一网关，兼容主流 AI 工具。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060e1a;
+      --bg-soft: #0b1829;
+      --panel: rgba(10, 22, 40, 0.78);
+      --panel-strong: #0e2038;
+      --line: rgba(100, 160, 255, 0.12);
+      --line-strong: rgba(100, 160, 255, 0.22);
+      --text: #e8f0ff;
+      --muted: #8ba4c4;
+      --accent: #79f7ff;
+      --accent-2: #42a6ff;
+      --accent-3: #a78bfa;
+      --success: #6effb4;
+      --emerald: #34d399;
+      --shadow: 0 24px 80px rgba(0,0,0,0.4);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max-width: 1200px;
+      --font-display: 'Outfit', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --font-body: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient Background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(66,166,255,0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 15%, rgba(121,247,255,0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 50% 80%, rgba(167,139,250,0.08), transparent);
+      z-index: 0;
+    }
+
+    /* Grid Overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(100,160,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,160,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(0,0,0,0.5), transparent);
+      z-index: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max-width));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(24px) saturate(1.4);
+      background: rgba(6,14,26,0.7);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: rgba(255,255,255,0.06);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+    }
+
+    .brand-text-wrapper {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .brand-text {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .brand-dot { color: var(--muted); font-size: 1.1rem; }
+
+    .brand-outline {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      padding: 8px 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      border-radius: 8px;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    /* ===== BUTTONS ===== */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .button:hover { transform: translateY(-1px); }
+
+    .button--primary {
+      color: #04111d;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 32px rgba(66,166,255,0.25);
+    }
+    .button--primary:hover { box-shadow: 0 16px 40px rgba(66,166,255,0.35); }
+
+    .button--secondary {
+      color: var(--text);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,0.04);
+    }
+    .button--secondary:hover {
+      border-color: rgba(100,160,255,0.4);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .button--large { min-height: 52px; padding: 0 28px; font-size: 1rem; }
+    .button--block { width: 100%; }
+
+    /* ===== HERO ===== */
+    .section-hero {
+      position: relative;
+      padding: 80px 0 40px;
+      overflow: hidden;
+    }
+
+    .hero-ambient {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(66,166,255,0.12), transparent 60%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .hero-line--accent {
+      background: linear-gradient(135deg, var(--text), var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-bottom: 32px;
+    }
+
+    .runtime-display {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(110,255,180,0.08);
+      border: 1px solid rgba(110,255,180,0.2);
+      color: var(--success);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .runtime-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px rgba(110,255,180,0.6);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* Software Strip */
+    .hero-software-strip {
+      margin-top: 56px;
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+    }
+
+    .strip-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+    }
+
+    .software-flex-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .software-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #d0e4ff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .software-badge:hover {
+      border-color: rgba(121,247,255,0.3);
+      background: rgba(121,247,255,0.06);
+    }
+
+    .software-badge--more {
+      color: var(--muted);
+      position: relative;
+      cursor: default;
+    }
+
+    .more-dots { letter-spacing: 2px; }
+
+    .more-tooltip {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line-strong);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .software-badge--more:hover .more-tooltip { opacity: 1; }
+
+    /* ===== FEATURES (BENTO) ===== */
+    .section-features {
+      padding: 60px 0;
+    }
+
+    .integrated-bento {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
+
+    .bento-card-large {
+      padding: 32px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(66,166,255,0.06), rgba(255,255,255,0.02)),
+        var(--panel);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .usage-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .usage-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .text-accent { color: var(--accent); }
+
+    .usage-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    .usage-visual {
+      flex: 1;
+      min-height: 260px;
+    }
+
+    .mock-card {
+      position: relative;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(100,160,255,0.15);
+      background: rgba(4,12,24,0.85);
+      height: 100%;
+    }
+
+    .mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .mock-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(110,255,180,0.5);
+    }
+
+    .mock-id {
+      color: rgba(255,255,255,0.3);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .telemetry-pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .pipeline-node {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+
+    .pipeline-node-accent {
+      border-color: rgba(121,247,255,0.3);
+      color: var(--accent);
+      background: rgba(121,247,255,0.06);
+    }
+
+    .pipeline-flow {
+      flex: 1;
+      max-width: 120px;
+      height: 2px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-particle {
+      position: absolute;
+      top: -2px;
+      left: -20px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(121,247,255,0.6);
+      animation: flow-move 2s linear infinite;
+    }
+
+    @keyframes flow-move {
+      0% { left: -20px; }
+      100% { left: calc(100% + 20px); }
+    }
+
+    .telemetry-stats {
+      display: grid;
+      gap: 12px;
+    }
+
+    .telemetry-item {
+      display: grid;
+      grid-template-columns: 120px 1fr 50px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .t-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .t-bar-wrap {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .t-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    .t-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    .font-bold { font-weight: 700; }
+
+    .mock-overlay-card {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: rgba(8,20,36,0.92);
+      border: 1px solid rgba(100,160,255,0.15);
+      backdrop-filter: blur(8px);
+    }
+
+    .overlay-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .overlay-amount {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .text-emerald { color: var(--emerald); }
+
+    .overlay-details {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .bento-stacked {
+      display: grid;
+      gap: 16px;
+    }
+
+    .bento-card-compact {
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+    }
+
+    .compact-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .feature-icon-wrap {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(121,247,255,0.08);
+      border: 1px solid rgba(121,247,255,0.2);
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    /* ===== PRICING ===== */
+    .section-pricing {
+      padding: 80px 0;
+    }
+
+    .section-heading-centered {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+
+
+    .pricing-bento-layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .price-bento-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 26px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      transition: all 0.25s ease;
+    }
+    .price-bento-card:hover {
+      border-color: rgba(100,160,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    .price-bento-card--priority {
+      border-color: rgba(121,247,255,0.25);
+      background:
+        linear-gradient(180deg, rgba(121,247,255,0.06), rgba(255,255,255,0.02)),
+        rgba(10,22,40,0.78);
+    }
+
+    .price-bento-card--featured {
+      border-color: rgba(255,211,107,0.4);
+      box-shadow: 0 16px 48px rgba(255,211,107,0.1);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -1px;
+      right: 20px;
+      padding: 6px 14px;
+      border-radius: 0 0 10px 10px;
+      background: linear-gradient(135deg, #ffd36b, #ffb347);
+      color: #1a1403;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .price-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .price-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .price-amount-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .price-currency {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .price-period {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .price-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      min-height: 42px;
+    }
+
+    .rate-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .rate-exchange {
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .rate-exchange strong {
+      color: var(--accent);
+    }
+
+    .rate-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(110,255,180,0.12);
+      border: 1px solid rgba(110,255,180,0.25);
+    }
+
+    .rate-chip-text {
+      font-size: 0.7rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .rate-chip-num {
+      font-size: 0.8rem;
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .price-features {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .price-features li {
+      position: relative;
+      padding-left: 20px;
+      color: #c8ddef;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .price-features li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      box-shadow: 0 0 0 4px rgba(121,247,255,0.08);
+    }
+
+    .quota-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(121,247,255,0.1);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* ===== FAQ ===== */
+    .section-faq {
+      padding: 80px 0;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .faq-accordion {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-accordion:hover {
+      border-color: var(--line-strong);
+    }
+
+    .faq-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      list-style: none;
+      user-select: none;
+    }
+    .faq-summary::-webkit-details-marker { display: none; }
+
+    .faq-icon {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    .faq-icon::before {
+      content: "+";
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .faq-accordion[open] .faq-icon { transform: rotate(45deg); }
+
+    .faq-answer {
+      padding: 0 24px 20px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    /* ===== CONTACT ===== */
+    .section-contact {
+      padding: 80px 0 40px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .contact-card {
+      padding: 32px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+    }
+
+    .contact-card--highlight {
+      background:
+        linear-gradient(180deg, rgba(121,247,255,0.06), rgba(255,255,255,0.02)),
+        var(--panel);
+      border-color: rgba(121,247,255,0.2);
+    }
+
+    .contact-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .contact-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .qr-placeholder {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(255,255,255,0.12);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 14px, transparent 14px 28px);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+    }
+
+    .wechat-contact {
+      display: grid;
+      place-items: center;
+      gap: 16px;
+      min-height: 280px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(121,247,255,0.18);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      padding: 24px;
+      text-align: center;
+    }
+
+    .wechat-qr {
+      width: min(220px, 100%);
+      aspect-ratio: 1;
+      border-radius: 16px;
+      padding: 12px;
+      background: #fff;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.28);
+    }
+
+    .wechat-qr img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .wechat-copy {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .wechat-copy strong {
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .wechat-modal[hidden] {
+      display: none;
+    }
+
+    .wechat-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .wechat-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(2, 8, 18, 0.72);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+    }
+
+    .wechat-modal__panel {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 420px);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(121,247,255,0.22);
+      background:
+        linear-gradient(180deg, rgba(121,247,255,0.08), rgba(255,255,255,0.03)),
+        var(--panel-strong);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .wechat-modal__close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .wechat-modal__panel h2 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      margin-bottom: 8px;
+    }
+
+    .wechat-modal__panel p {
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .wechat-modal__actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0.5;
+    }
+
+    .footer-brand .brand-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .footer-brand span {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: reveal-up 0.7s ease forwards;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    @keyframes reveal-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1080px) {
+      .integrated-bento,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-bento-layout {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .site-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 0;
+        min-height: auto;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .section-hero { padding: 50px 0 30px; }
+
+      .hero-title { font-size: clamp(2rem, 8vw, 3rem); }
+
+      .pricing-bento-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-shell { padding: 16px; }
+
+      .bento-card-large { padding: 24px; }
+
+      .telemetry-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" id="top">
+    <nav class="site-nav container" aria-label="主导航">
+      <a class="brand" href="#top">
+        <img class="brand-icon" src="https://img.cdn1.vip/i/69fb13a7a078d_1778062247.png" alt="Ahei API">
+        <div class="brand-text-wrapper">
+          <span class="brand-text">Ahei</span>
+          <span class="brand-dot">·</span>
+          <span class="brand-outline">API</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a class="nav-link" href="#features">能力</a>
+        <a class="nav-link" href="#pricing">定价</a>
+        <a class="nav-link" href="#faq">常见问题</a>
+        <a class="button button--secondary" href="#top" data-open-wechat>联系销售</a>
+        <a class="button button--secondary" href="https://ahei.asia/dashboard">登入</a>
+        <a class="button button--primary" href="https://ahei.asia/purchase">开始使用</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="section-hero">
+      <div class="hero-ambient" aria-hidden="true"></div>
+      <div class="container hero-content">
+        <h1 class="hero-title reveal">
+          <span class="hero-line--accent">让每个人，都能接入更强的 AI</span>
+        </h1>
+        <p class="hero-subtitle reveal delay-1">
+         
+        </p>
+        <div class="hero-actions reveal delay-2">
+          <a class="button button--primary button--large" href="#pricing">开始使用</a>
+        </div>
+      </div>
+
+      <div class="container" style="margin-top: 48px;">
+        <div class="hero-software-strip reveal delay-3">
+          <p class="strip-label">一个 API，直接接入主流 AI 工具</p>
+          <div class="software-flex-grid">
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb15704eff9_1778062704.png" alt="OpenCode" style="width:20px;height:20px;border-radius:4px;"> OpenCode</div>
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb15704a348_1778062704.png" alt="OpenClaw" style="width:20px;height:20px;border-radius:4px;">OpenClaw</div>
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb15703c5a3_1778062704.png" alt="Copilot" style="width:20px;height:20px;border-radius:4px;"> Copilot</div>
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb157030a2f_1778062704.png" alt="Codex" style="width:20px;height:20px;border-radius:4px;"> Codex</div>
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb157032e59_1778062704.png" alt="Claude Code" style="width:20px;height:20px;border-radius:4px;"> Claude Code</div>
+            <div class="software-badge"><img src="https://img.cdn1.vip/i/69fb15237ba59_1778062627.png" alt="VS Code" style="width:20px;height:20px;border-radius:4px;"> VS Code</div>
+            <div class="software-badge software-badge--more">
+              <span class="more-dots">•••</span>
+              <div class="more-tooltip">所有兼容标准 OpenAI 请求格式的环境均可无缝接入</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="section-features" id="features">
+      <div class="container">
+        <div class="integrated-bento">
+          <!-- Left: Large Feature Card -->
+          <div class="bento-card-large reveal">
+            <div class="usage-integrated-text">
+              <h2 class="usage-eyebrow">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                UNCOMPROMISED POWER
+              </h2>
+              <h3 class="usage-title">拒绝降智，<br><span class="text-accent">只提供最强的 AI 能力</span></h3>
+              <p class="usage-desc">直连顶级模型链路，让你拿到官方 AI 原生水准的真实能力，在复杂任务下依然稳定输出</p>
+            </div>
+            <div class="usage-visual">
+              <div class="mock-card">
+                <div class="mock-header">
+                  <div class="mock-status"><span class="status-dot"></span> 原生通道遥测</div>
+                  <div class="mock-id">CHANNEL: MAX_DIRECT</div>
+                </div>
+                <div class="telemetry-pipeline">
+                  <div class="pipeline-node">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                      <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                  </div>
+                  <div class="pipeline-flow"><div class="flow-particle"></div></div>
+                  <div class="pipeline-node pipeline-node-accent">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="telemetry-stats">
+                  <div class="telemetry-item">
+                    <div class="t-label">推理算力上限</div>
+                    <div class="t-bar-wrap"><div class="t-bar" style="width:100%;background:#10B981;"></div></div>
+                    <div class="t-value text-accent font-bold">MAX</div>
+                  </div>
+                  <div class="telemetry-item">
+                    <div class="t-label">上下文保真度</div>
+                    <div class="t-bar-wrap"><div class="t-bar" style="width:100%;background:#0EA5E9;"></div></div>
+                    <div class="t-value font-bold" style="color:#0EA5E9;">100%</div>
+                  </div>
+                  <div class="telemetry-item">
+                    <div class="t-label">模型链路监测</div>
+                    <div class="t-bar-wrap"><div class="t-bar" style="width:100%;background:#8B5CF6;"></div></div>
+                    <div class="t-value font-bold" style="color:#8B5CF6;">100%</div>
+                  </div>
+                </div>
+                <div class="mock-overlay-card">
+                  <div class="overlay-label">峰值并发处理状态</div>
+                  <div class="overlay-amount text-emerald">极速畅通</div>
+                  <div class="overlay-details">
+                    <span>Latency: &lt;24ms</span>
+                    <span style="color:rgba(255,255,255,0.3);">|</span>
+                    <span>Dropped: 0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: 3 Compact Cards -->
+          <div class="bento-stacked">
+            <div class="bento-card-compact reveal delay-1">
+              <div class="compact-header">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                </div>
+                <h4 class="feature-title">金融级安全保障</h4>
+              </div>
+              <p class="feature-desc">所有数据传输均经过加密保护。绝不存储原始对话，隐私永远是最高优先级。</p>
+            </div>
+            <div class="bento-card-compact reveal delay-2">
+              <div class="compact-header">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="8" x="2" y="4" rx="2" ry="2"/>
+                    <rect width="20" height="8" x="2" y="14" rx="2" ry="2"/>
+                    <line x1="6" y1="8" x2="6.01" y2="8"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+                  </svg>
+                </div>
+                <h4 class="feature-title">企业级高并发</h4>
+              </div>
+              <p class="feature-desc">基于分布式架构的高可用网关，轻松接住千万级并发请求，为业务护航。</p>
+            </div>
+            <div class="bento-card-compact reveal delay-3">
+              <div class="compact-header">
+                <div class="feature-icon-wrap">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                    <rect x="9" y="9" width="6" height="6"/>
+                    <line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/>
+                    <line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/>
+                    <line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/>
+                    <line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
+                  </svg>
+                </div>
+                <h4 class="feature-title">7x24h 专属售后</h4>
+              </div>
+              <p class="feature-desc">Pro 及以上订阅用户尊享技术专家团队全天候支持，随时响应任何集成问题。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRICING ===== -->
+    <section class="section-pricing" id="pricing">
+      <div class="container">
+        <div class="pricing-bento-layout">
+          <div class="price-bento-card price-bento-card--priority reveal">
+            <p class="price-label">PAY-AS-YOU-GO</p>
+            <h3 class="price-name">按量付费</h3>
+            <div class="price-amount-wrap">
+              <span class="price-amount">0.15</span><span class="price-period">/ $1 额度</span>
+            </div>
+            <div class="rate-block">
+              <div class="rate-exchange">1 元起充，适合灵活使用</div>
+              <div class="rate-chip"><span class="rate-chip-text">省</span><span class="rate-chip-num">98%</span></div>
+            </div>
+            <ul class="price-features">
+              <li>充值后按 $1 计价额度入账</li>
+              <li>实际使用时按当前倍率扣费</li>
+              <li>额度长期有效，适合灵活使用</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即充值</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-1">
+            <p class="price-label">STARTER</p>
+            <h3 class="price-name">日卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">6.9</span>
+            </div>
+            <p class="price-desc">适合首次体验、短期需求与临时项目</p>
+            <ul class="price-features">
+              <li>日限额 $60</li>
+              <li>1 天有效</li>
+              <li>适合轻量体验与临时任务</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-1">
+            <p class="price-label">STARTER</p>
+            <h3 class="price-name">Starter 月卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">58</span><span class="price-period">/月</span>
+            </div>
+            <p class="price-desc">适合偶尔使用高阶 AI 模型服务的轻度需求</p>
+            <ul class="price-features">
+              <li>每日额度 <span class="quota-badge">$25</span></li>
+              <li>每天 0:00 重置额度</li>
+              <li>支持 1 线程并发</li>
+              <li>月限额 $500</li>
+              <li>标准线路倍率 1.0×</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-2">
+            <p class="price-label">LITE</p>
+            <h3 class="price-name">Lite 月卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">98</span><span class="price-period">/月</span>
+            </div>
+            <p class="price-desc">满足个人日常工作与编程开发的基础调用</p>
+            <ul class="price-features">
+              <li>每日额度 <span class="quota-badge">$50</span></li>
+              <li>每天 0:00 重置额度</li>
+              <li>支持 1 线程并发</li>
+              <li>月限额 $950</li>
+              <li>标准线路倍率 1.0×</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-2">
+            <p class="price-label">ESSENTIAL</p>
+            <h3 class="price-name">Plus 月卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">199</span><span class="price-period">/月</span>
+            </div>
+            <p class="price-desc">适合轻度到中度使用，兼顾价格与日常需求</p>
+            <ul class="price-features">
+              <li>每日额度 <span class="quota-badge">$100</span></li>
+              <li>每天 0:00 重置额度</li>
+              <li>支持 10 线程并发</li>
+              <li>月限额 $2,200</li>
+              <li>专属线路倍率 1.1×</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card price-bento-card--featured reveal delay-3">
+            <div class="price-badge">推荐选择</div>
+            <p class="price-label" style="color:var(--emerald);">PROFESSIONAL</p>
+            <h3 class="price-name">Pro 月卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">299</span><span class="price-period">/月</span>
+            </div>
+            <p class="price-desc">适合绝大多数用户的长期日常使用</p>
+            <ul class="price-features">
+              <li>每日额度 <span class="quota-badge">$200</span></li>
+              <li>每天 0:00 重置额度</li>
+              <li>支持 20 线程并发</li>
+              <li>月限额 $3,600</li>
+              <li>专属线路倍率 1.1×</li>
+            </ul>
+            <a class="button button--primary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-3">
+            <p class="price-label">ENTERPRISE</p>
+            <h3 class="price-name">Max 月卡</h3>
+            <div class="price-amount-wrap">
+              <span class="price-currency">¥</span><span class="price-amount">599</span><span class="price-period">/月</span>
+            </div>
+            <p class="price-desc">适合重度使用、专业场景与更高强度任务</p>
+            <ul class="price-features">
+              <li>每日额度 <span class="quota-badge">$500</span></li>
+              <li>每天 0:00 重置额度</li>
+              <li>支持 50 线程并发</li>
+              <li>月限额 $8,000</li>
+              <li>专属线路倍率 1.1×</li>
+            </ul>
+            <a class="button button--secondary button--block" href="https://ahei.asia/purchase">立即开通</a>
+          </div>
+
+          <div class="price-bento-card reveal delay-4">
+            <p class="price-label">ENTERPRISE</p>
+            <h3 class="price-name">企业定制</h3>
+            <div class="price-amount-wrap">
+              <span class="price-name" style="margin:0;font-weight:700;">私有化与定制</span>
+            </div>
+            <p class="price-desc">面向团队与企业客户<br>提供定制化接入方案</p>
+            <ul class="price-features">
+              <li>专属独立极速节点部署</li>
+              <li>API 与技术专家 1v1 支持</li>
+            </ul>
+            <a class="button button--secondary button--block" href="#top">联系销售</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="section-faq" id="faq">
+      <div class="container" style="max-width: 780px;">
+        <div class="section-heading-centered" style="margin-bottom: 48px;">
+          <h2 class="reveal">常见问题，<span class="text-accent">随时解答</span></h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-accordion reveal delay-1" name="faq">
+            <summary class="faq-summary">我的数据安全如何保证？<span class="faq-icon"></span></summary>
+            <div class="faq-answer">我们采用标准的加密传输协议保护您的数据。对话内容在处理后即时清除，不做持久化存储。系统仅记录 Token 消耗量用于计费。</div>
+          </details>
+          <details class="faq-accordion reveal delay-1" name="faq">
+            <summary class="faq-summary">订阅和按量付费可以同时使用吗？<span class="faq-icon"></span></summary>
+            <div class="faq-answer">可以。如果您同时拥有订阅和按量余额，系统会优先消耗订阅提供的每日/每周额度。当订阅额度用尽后，会自动无缝切换到按量余额。</div>
+          </details>
+          <details class="faq-accordion reveal delay-2" name="faq">
+            <summary class="faq-summary">企业定制化服务包含哪些内容？<span class="faq-icon"></span></summary>
+            <div class="faq-answer">企业定制服务包括更高的并发上限、定制化的物理专线、私有化部署咨询以及深度技术集成支持。请联系我们的销售团队获取详细方案。</div>
+          </details>
+          <details class="faq-accordion reveal delay-2" name="faq">
+            <summary class="faq-summary">怎么联系人工客服？<span class="faq-icon"></span></summary>
+            <div class="faq-answer">您可以直接添加客服微信联系我们，微信号：Ahei-6</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section class="section-contact" id="contact">
+      <div class="container contact-grid">
+        <div class="contact-card contact-card--highlight reveal">
+          <h3>微信扫码购买或咨询</h3>
+          <p>扫描下方二维码，添加客服微信开通套餐。如有任何疑问，也欢迎随时联系我们。</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <a class="button button--primary" href="#top">联系销售</a>
+            <a class="button button--secondary" href="#top">返回顶部</a>
+          </div>
+        </div>
+        <div class="contact-card reveal delay-1">
+          <div class="wechat-contact" id="wechat-contact">
+            <div class="wechat-qr">
+              <img src="https://img.cdn1.vip/i/69fe99237c841_1778293027.webp" alt="微信二维码">
+            </div>
+            <div class="wechat-copy">
+              <span>微信扫码购买或咨询</span>
+              <strong>Ahei-6</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="wechat-modal" id="wechat-modal" hidden>
+    <button class="wechat-modal__backdrop" type="button" data-wechat-close aria-label="关闭微信扫码弹窗"></button>
+    <div class="wechat-modal__panel" role="dialog" aria-modal="true" aria-labelledby="wechat-modal-title">
+      <button class="wechat-modal__close" type="button" data-wechat-close aria-label="关闭">×</button>
+      <h2 id="wechat-modal-title">微信扫码购买或咨询</h2>
+      <p>请使用微信扫码添加客服，开通套餐或咨询企业方案。</p>
+      <div class="wechat-contact">
+        <div class="wechat-qr">
+          <img src="https://img.cdn1.vip/i/69fe99237c841_1778293027.webp" alt="微信二维码">
+        </div>
+        <div class="wechat-copy">
+          <span>微信号</span>
+          <strong>Ahei-6</strong>
+        </div>
+      </div>
+      <div class="wechat-modal__actions">
+        <button class="button button--primary" type="button" data-wechat-close>已知晓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <a class="footer-brand" href="#top">
+        <img class="brand-icon" src="https://img.cdn1.vip/i/69fb13a7a078d_1778062247.png" alt="Ahei API">
+        <span>Ahei API</span>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+
+    // Runtime Counter - persist the initial start time so refresh does not reset it
+    const runtimeElement = document.getElementById("runtime");
+    const runtimeStorageKey = "ahei_runtime_started_at";
+    const BASE_DAYS = 125;
+    const BASE_HOURS = 6;
+    const BASE_SECONDS_OFFSET = 3;
+    const baseElapsedSeconds = (BASE_DAYS * 86400) + (BASE_HOURS * 3600) + BASE_SECONDS_OFFSET;
+
+    let runtimeStartedAt = Number(localStorage.getItem(runtimeStorageKey));
+    if (!Number.isFinite(runtimeStartedAt) || runtimeStartedAt <= 0) {
+      runtimeStartedAt = Date.now() - (baseElapsedSeconds * 1000);
+      localStorage.setItem(runtimeStorageKey, String(runtimeStartedAt));
+    }
+
+    function updateRuntime() {
+      if (!runtimeElement) {
+        return;
+      }
+      const elapsedSeconds = Math.max(0, Math.floor((Date.now() - runtimeStartedAt) / 1000));
+      const days = Math.floor(elapsedSeconds / 86400);
+      const hours = Math.floor((elapsedSeconds % 86400) / 3600);
+      const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+      const seconds = elapsedSeconds % 60;
+      runtimeElement.textContent =
+        days + " 天 " + hours + " 小时 " + minutes + " 分 " + seconds + " 秒";
+    }
+
+    updateRuntime();
+    setInterval(updateRuntime, 1000);
+
+    // WeChat contact modal
+    const wechatModal = document.getElementById("wechat-modal");
+    const wechatCloseControls = document.querySelectorAll("[data-wechat-close]");
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("[data-open-wechat]");
+      if (!link) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (wechatModal) {
+        wechatModal.hidden = false;
+        document.body.classList.add("modal-open");
+      }
+    }, true);
+
+    const topLinks = Array.from(document.querySelectorAll('a[href="#top"]'));
+    const contactLinks = topLinks.filter((link) => {
+      const text = link.textContent.trim();
+      return text.includes("联系销售") ||
+        text.includes("销售") ||
+        text.includes("è”ç³»") ||
+        text.includes("é”€å”®") ||
+        text.includes("é‘±æ—‚éƒ´");
+    });
+
+    function openWechatModal(event) {
+      if (event) {
+        event.preventDefault();
+      }
+      if (!wechatModal) {
+        const contactBlock = document.getElementById("wechat-contact");
+        if (contactBlock) {
+          contactBlock.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+      wechatModal.hidden = false;
+      document.body.classList.add("modal-open");
+      const closeButton = wechatModal.querySelector(".wechat-modal__close");
+      if (closeButton) {
+        closeButton.focus();
+      }
+    }
+
+    function closeWechatModal() {
+      if (!wechatModal) {
+        return;
+      }
+      wechatModal.hidden = true;
+      document.body.classList.remove("modal-open");
+    }
+
+    openWechatModal();
+
+    contactLinks.forEach((link) => {
+      link.setAttribute("href", "#wechat-contact");
+      link.addEventListener("click", openWechatModal);
+    });
+
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest('a[href="#top"]');
+      if (!link) {
+        return;
+      }
+      const text = link.textContent.trim();
+      if (text.includes("联系销售") || text.includes("销售")) {
+        openWechatModal(event);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest('.nav-actions a.button.button--secondary[href="#top"]');
+      if (link) {
+        openWechatModal(event);
+      }
+    });
+
+    wechatCloseControls.forEach((control) => {
+      control.addEventListener("click", closeWechatModal);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && wechatModal && !wechatModal.hidden) {
+        closeWechatModal();
+      }
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = "running";
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll(".reveal").forEach((el) => {
+      el.style.animationPlayState = "paused";
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
